@@ -1,5 +1,5 @@
 pandas==1.4.1
-tqdm==4.63.0
+tensorboard
 torch>=1.7.1
 torchvision>=0.8.2
-tensorboard
+tqdm==4.63.0

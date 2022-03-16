@@ -10,6 +10,13 @@ if __name__ == "__main__":
 
     # read train df
     train_df = pd.read_csv(train_csv_path)
+
+    # fix the mistakes
+    train_df['species'].replace({'bottlenose_dolpin' : 'bottlenose_dolphin',
+                                 'kiler_whale' : 'killer_whale',
+                                 'beluga' : 'beluga_whale',
+                                 'globis' : 'short_finned_pilot_whale',
+                                 'pilot_whale' : 'short_finned_pilot_whale'}, inplace =True)
     
     # create class whale or dolphin
     train_df['class'] = train_df['species'].apply(lambda x: x.split("_")[-1])

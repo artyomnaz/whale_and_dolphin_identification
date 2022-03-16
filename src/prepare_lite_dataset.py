@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 if __name__ == "__main__":
     # path to train csv
-    train_csv_path = 'dataset/train.csv'
+    train_csv_path = 'dataset/modified_train.csv'
 
     # read data and fix the mistakes
     train_df = pd.read_csv(train_csv_path)
@@ -17,15 +17,6 @@ if __name__ == "__main__":
                                 'globis' : 'short_finned_pilot_whale',
                                 'pilot_whale' : 'short_finned_pilot_whale'
                             }, inplace =True)
-
-    ########### jupyter notebook ###########
-    # # visualize data
-    # train_df.head(5)
-
-    # # print class count
-    # print('Species Count: ',len(train_df['species'].value_counts()))
-    # train_df['species'].value_counts()
-    ########################################
 
     # collect unique ids
     unique_individual_ids = list(set(train_df['individual_id']))
@@ -43,7 +34,6 @@ if __name__ == "__main__":
         image_path = os.path.join('dataset', 'train_images', item['image'])
         new_image_path = os.path.join(new_path, item['image'])
         shutil.copyfile(image_path, new_image_path)
-
 
     # create lite_train.csv
     new_train_df = pd.DataFrame(simple_dataset)

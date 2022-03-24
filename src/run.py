@@ -1,7 +1,6 @@
 # TODO: add clearml & tb
 # TODO: readme
 # TODO: fill the table
-# TODO: add comments
 # TODO: add validation
 
 import os
@@ -46,7 +45,7 @@ def parse_args():
     parser.add_argument("--embedding_size", default=128,
                         type=int, help="embedding size")
     parser.add_argument("--threshold_distance", default=5,
-                        type=int, help="threshold for cluster distances")
+                        type=float, help="threshold for cluster distances")
     parser.add_argument("--faiss_clusters", default=50,
                         type=int, help="faiss clusters amount")
     parser.add_argument("--task_name", type=str, help="name for the task")

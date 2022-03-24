@@ -1,8 +1,8 @@
 import os
-import pandas as pd
 import shutil
-from tqdm import tqdm
 
+import pandas as pd
+from tqdm import tqdm
 
 if __name__ == "__main__":
     # path to train csv
@@ -11,12 +11,12 @@ if __name__ == "__main__":
     # read data and fix the mistakes
     train_df = pd.read_csv(train_csv_path)
     train_df['species'].replace({
-                                'bottlenose_dolpin' : 'bottlenose_dolphin',
-                                'kiler_whale' : 'killer_whale',
-                                'beluga' : 'beluga_whale',
-                                'globis' : 'short_finned_pilot_whale',
-                                'pilot_whale' : 'short_finned_pilot_whale'
-                            }, inplace =True)
+                                'bottlenose_dolpin': 'bottlenose_dolphin',
+                                'kiler_whale': 'killer_whale',
+                                'beluga': 'beluga_whale',
+                                'globis': 'short_finned_pilot_whale',
+                                'pilot_whale': 'short_finned_pilot_whale'
+                                }, inplace=True)
 
     # collect unique ids
     unique_individual_ids = list(set(train_df['individual_id']))
@@ -24,7 +24,8 @@ if __name__ == "__main__":
     # collect simple dataset with one item of each individual_id
     simple_dataset = []
     for unique_individual_id in tqdm(unique_individual_ids):
-        simple_dataset.append(train_df[train_df['individual_id'] == unique_individual_id].iloc(0)[0])
+        simple_dataset.append(
+            train_df[train_df['individual_id'] == unique_individual_id].iloc(0)[0])
 
     # copy dataset items to the new folder
     new_path = os.path.join('dataset', 'lite_train')

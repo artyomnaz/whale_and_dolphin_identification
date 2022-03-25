@@ -5,8 +5,10 @@ import faiss
 import numpy as np
 import torch
 import torch.nn as nn
+from clearml import Task
 from torch.optim import Adam
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 
 from dataset import (WhaleAndDolphinDataset, get_test_transform,
                      get_train_transform)
@@ -29,6 +31,8 @@ def parse_args():
                         help="num_workers for a dataloader")
     parser.add_argument("--random_seed", default=42,
                         type=int, help="random seed")
+    parser.add_argument("--vis_freq", default=50, type=int,
+                        help="clearml log frequency")
     parser.add_argument("--train_df_path", type=str, help="path to train df")
     parser.add_argument("--train_dataset_path", type=str,
                         help="path to train dataset")
@@ -43,6 +47,8 @@ def parse_args():
                         type=float, help="threshold for cluster distances")
     parser.add_argument("--faiss_clusters", default=50,
                         type=int, help="faiss clusters amount")
+    parser.add_argument("--project_name", type=str,
+                        default='whale_and_dolphin', help="name for the project")
     parser.add_argument("--task_name", type=str, help="name for the task")
     parser.add_argument("--happy_model_weights", type=str,
                         default=None, help="weights for happy model")
@@ -83,6 +89,19 @@ if __name__ == "__main__":
     # define model, optimizer, criterion
     happy_model = HappyWhaleModel(
         numClasses=15587, noNeurons=250, embeddingSize=opt.embedding_size).to(device)
+
+    # ------------------------------------------CLEARML
+    # tensorboard
+    writer = SummaryWriter()
+
+    # init trains
+    task = Task.init(project_name=opt.project_name, task_name=opt.task_name)
+
+    # add generator configurations to clearml
+    cfg_str = str(happy_model) + str('\n')
+    Task.current_task().set_model_config(cfg_str)
+    # ------------------------------------------CLEARML
+
     optimizer = Adam(happy_model.parameters(), lr=opt.lr,
                      weight_decay=opt.adam_weight_decay, amsgrad=False)
     criterion = nn.CrossEntropyLoss()
@@ -90,7 +109,7 @@ if __name__ == "__main__":
     if opt.happy_model_weights is None or opt.happy_model_weights == '':
         # train model
         happy_model = train_pipeline(happy_model, optimizer, criterion, train_dataloader,
-                                     device, opt.n_epochs, opt.save_folder, save_name=opt.task_name)
+                                     device, opt.n_epochs, opt.save_folder, save_name=opt.task_name, writer=writer, vis_freq=opt.vis_freq)
     else:
         # load pretrained model
         happy_model.load_state_dict(torch.load(opt.happy_model_weights))

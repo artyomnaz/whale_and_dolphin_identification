@@ -5,6 +5,7 @@ python src/run.py \
                 --batch_size 3 \
                 --num_workers 4 \
                 --random_seed 42 \
+                --vis_freq 50 \
                 --train_df_path 'dataset/lite_train.csv' \
                 --train_dataset_path 'dataset/lite_train_resized' \
                 --test_df_path 'dataset/sample_submission.csv' \

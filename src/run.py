@@ -1,8 +1,3 @@
-# TODO: add clearml & tb
-# TODO: readme
-# TODO: fill the table
-# TODO: add validation
-
 import os
 from argparse import ArgumentParser
 

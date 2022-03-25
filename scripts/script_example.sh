@@ -9,12 +9,13 @@ python src/run.py \
                 --train_dataset_path 'dataset/lite_train_resized' \
                 --test_df_path 'dataset/sample_submission.csv' \
                 --test_dataset_path 'dataset/test_images' \
-                --save_folder 'results/exp2.0_vgg16_faiss_' \
+                --save_folder 'results/exp1.0_vgg16_faiss' \
                 --embedding_size 128 \
                 --threshold_distance 5 \
                 --faiss_clusters 50 \
-                --task_name 'exp2.0_vgg16_faiss' \
-                --happy_model_weights 'results/exp2.0_vgg16_faiss_/checkpoints/exp2.0_vgg16_faiss_17.644.pth' \
-                --train_embeddings_path 'results/exp2.0_vgg16_faiss_/train_happy_model_embeddings.npy' \
-                --test_embeddings_path 'results/exp2.0_vgg16_faiss_/test_happy_model_embeddings.npy' \
-                --train_labels_path 'results/exp2.0_vgg16_faiss_/train_happy_model_labels.npy'
+                --project_name 'whale_and_dolphin' \
+                --task_name 'exp1.0_vgg16_faiss' \
+                --happy_model_weights '' \
+                --train_embeddings_path '' \
+                --test_embeddings_path '' \
+                --train_labels_path ''

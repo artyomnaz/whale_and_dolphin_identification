@@ -5,6 +5,7 @@ import os
 import pandas as pd
 import torch.nn as nn
 import torchvision.transforms as transforms
+from tqdm import tqdm
 
 from util import pad_and_resize_image
 
@@ -13,7 +14,7 @@ class WhaleAndDolphinDataset(nn.Module):
     """Whale and dolphin Dataset class
     """
 
-    def __init__(self, dataset_path, df_path, image_size=128, transform=None, is_train=True):
+    def __init__(self, dataset_path, df_path, image_size=128, transform=None, is_train=True, balanced=True, balance_amount=10):
         """initialization
 
         Args:
@@ -30,8 +31,48 @@ class WhaleAndDolphinDataset(nn.Module):
         self.is_train = is_train
         self.df = pd.read_csv(self.df_path)
 
-        self.image_paths = [os.path.join(self.dataset_path, image_name) for image_name in os.listdir(
-            self.dataset_path) if 'ipynb' not in image_name]
+        if balanced:
+            labels_dict = {}
+            for i in tqdm(range(len(self.df)), 'Prepare counts of items'):
+                individual_key = self.df.iloc[i].individual_key
+                if individual_key in labels_dict:
+                    labels_dict[individual_key] += 1
+                else:
+                    labels_dict[individual_key] = 1
+
+            counts = dict.fromkeys(labels_dict.keys(), 0)
+            drop_rows = []
+            for i in tqdm(range(len(self.df)), 'Drop a lot of lines'):
+                individual_key = self.df.iloc[i].individual_key
+
+                if counts[individual_key] >= balance_amount:
+                    drop_rows.append(i)
+
+                counts[individual_key] += 1
+
+            self.df = self.df.drop(drop_rows).reset_index()
+
+            new_rows = []
+
+            for i in tqdm(range(len(self.df)), 'Create new duplicate lines'):
+                individual_key = self.df.iloc[i].individual_key
+
+                if counts[individual_key] < balance_amount:
+                    new_rows_amount = balance_amount - counts[individual_key]
+                    new_indexes = list(
+                        self.df[self.df.individual_key == individual_key].index)
+
+                    if len(new_indexes) < new_rows_amount:
+                        new_indexes = new_indexes * balance_amount
+
+                    new_indexes = new_indexes[:new_rows_amount]
+
+                    for new_index in new_indexes:
+                        new_rows.append(new_index)
+                    counts[individual_key] += new_rows_amount
+
+            self.df = self.df.append(
+                [self.df.iloc[new_rows]], ignore_index=True)
 
     def __len__(self):
         """Dataset length
@@ -55,7 +96,7 @@ class WhaleAndDolphinDataset(nn.Module):
         row = self.df.iloc[idx]
 
         # get image path
-        image_path = self.image_paths[idx]
+        image_path = os.path.join(self.dataset_path, row.image)
 
         # open and preprocess an image
         image = pad_and_resize_image(image_path, image_size=self.image_size)
@@ -84,7 +125,7 @@ def get_train_transform():
         _type_: torchvision.transforms
     """
     transform = A.Compose([
-        A.HorizontalFlip(),
+        A.HorizontalFlip(p=0.5),
         A.ShiftScaleRotate(shift_limit=0.1, 
                            scale_limit=0.15, 
                            rotate_limit=60, 

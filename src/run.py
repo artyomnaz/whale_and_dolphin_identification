@@ -1,9 +1,11 @@
 import os
+from argparse import ArgumentParser
 
 import faiss
 import numpy as np
 import torch
 import torch.nn as nn
+import yaml
 from clearml import Task
 from torch.optim import Adam
 from torch.utils.data import DataLoader
@@ -14,12 +16,13 @@ from dataset import (WhaleAndDolphinDataset, get_test_transform,
 from model import HappyWhaleModel
 from train import train_pipeline
 from util import get_image_embeddings_and_labels, set_seed
-import yaml
-
 
 if __name__ == "__main__":
+    parser = ArgumentParser()
+    parser.add_argument("--config_path", type=str, required=True, help="path to yaml config")
+    args = parser.parse_args()
 
-    with open("options/config.yaml", "r") as yml_file:
+    with open(args.config_path, "r") as yml_file:
         opt = yaml.safe_load(yml_file)
 
     device = torch.device('cuda:0')
@@ -39,9 +42,9 @@ if __name__ == "__main__":
     train_df = train_dataset.df.copy()
 
     test_dataset = WhaleAndDolphinDataset(dataset_path=opt['test_dataset_path'], df_path=opt['test_df_path'],
-                                          image_size=128, transform=get_test_transform(), is_train=False)
+                                          image_size=128, transform=get_test_transform(), is_train=False, balanced=False)
     test_dataloader = DataLoader(
-        test_dataset, batch_size=opt['training']['batch_size'], drop_last=True, num_workers=opt['training']['num_workers'])
+        test_dataset, batch_size=opt['training']['batch_size'], num_workers=opt['training']['num_workers'])
     test_df = test_dataset.df.copy()
 
     # define model, optimizer, criterion

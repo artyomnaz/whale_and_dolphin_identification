@@ -1,7 +1,7 @@
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+import numpy as np
 import os
-
 import pandas as pd
 import torch.nn as nn
 import torchvision.transforms as transforms
@@ -62,7 +62,7 @@ class WhaleAndDolphinDataset(nn.Module):
 
         # apply transformations
         if self.transform is not None:
-            image = self.transform(image=image)
+            image = self.transform(image=np.array(image))
 
         # to tensor
         if image.shape[2] != self.image_size:

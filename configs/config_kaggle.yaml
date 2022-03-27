@@ -11,7 +11,7 @@ train_labels_path: ''
 training:
   lr: 1e-4
   adam_weight_decay: 1e-6
-  n_epochs: 1
+  n_epochs: 10
   batch_size: 3
   num_workers: 2
   random_seed: 42

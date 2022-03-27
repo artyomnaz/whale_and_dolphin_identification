@@ -19,7 +19,8 @@ from util import get_image_embeddings_and_labels, set_seed
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--config_path", type=str, required=True, help="path to yaml config")
+    parser.add_argument("--config_path", type=str,
+                        required=True, help="path to yaml config")
     args = parser.parse_args()
 
     with open(args.config_path, "r") as yml_file:
@@ -35,14 +36,14 @@ if __name__ == "__main__":
 
     # define dataset, dataloader, dataframe
     train_dataset = WhaleAndDolphinDataset(
-        dataset_path=opt['train_dataset_path'], df_path=opt['train_df_path'], image_size=128, 
-        transform=get_train_transform(), is_train=True)
+        dataset_path=opt['train_dataset_path'], df_path=opt['train_df_path'], image_size=opt['training']['image_size'],
+        transform=get_train_transform(), is_train=True, balanced=True, balance_amount=opt['training']['balance_amount'])
     train_dataloader = DataLoader(
-        train_dataset, batch_size=opt['training']['batch_size'], num_workers=opt['training']['num_workers'])
+        train_dataset, batch_size=opt['training']['batch_size'], num_workers=opt['training']['num_workers'], drop_last=True)
     train_df = train_dataset.df.copy()
 
     test_dataset = WhaleAndDolphinDataset(dataset_path=opt['test_dataset_path'], df_path=opt['test_df_path'],
-                                          image_size=128, transform=get_test_transform(), is_train=False, balanced=False)
+                                          image_size=opt['training']['image_size'], transform=get_test_transform(), is_train=False, balanced=False)
     test_dataloader = DataLoader(
         test_dataset, batch_size=opt['training']['batch_size'], num_workers=opt['training']['num_workers'])
     test_df = test_dataset.df.copy()
@@ -57,7 +58,8 @@ if __name__ == "__main__":
         writer = SummaryWriter()
 
         # init trains
-        task = Task.init(project_name=opt['logs']['project_name'], task_name=opt['logs']['task_name'])
+        task = Task.init(
+            project_name=opt['logs']['project_name'], task_name=opt['logs']['task_name'])
 
         # add generator configurations to clearml
         cfg_str = str(happy_model) + str('\n')
@@ -71,7 +73,7 @@ if __name__ == "__main__":
     if opt['happy_model_weights'] is None or opt['happy_model_weights'] == '':
         # train model
         happy_model = train_pipeline(happy_model, optimizer, criterion, train_dataloader,
-                                     device, opt['training']['n_epochs'], opt['save_folder'], 
+                                     device, opt['training']['n_epochs'], opt['save_folder'],
                                      save_name=opt['logs']['task_name'], writer=writer, vis_freq=opt['logs']['vis_freq'])
     else:
         # load pretrained model
@@ -111,7 +113,8 @@ if __name__ == "__main__":
 
     # get distances  and indices
     faiss.normalize_L2(test_image_embeddings.astype('float32'))
-    D, I = index.search(test_image_embeddings, k=opt['training']['faiss_clusters'])
+    D, I = index.search(test_image_embeddings,
+                        k=opt['training']['faiss_clusters'])
 
     # collect submit csv
     answers = []

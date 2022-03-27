@@ -26,10 +26,10 @@ def train_pipeline(model, optimizer, criterion, dataloader, device, n_epochs, sa
     BEST_SCORE = 9999
     cur_iter = 0
 
+    train_losses = []
     # epochs cycle
     for epoch in range(n_epochs):
         model.train()
-        train_losses = []
 
         # batch cycle
         for x in tqdm(dataloader, desc='TRAIN'):
@@ -63,7 +63,8 @@ def train_pipeline(model, optimizer, criterion, dataloader, device, n_epochs, sa
             torch.save(model.state_dict(), save_path)
             BEST_SCORE = mean_train_loss
 
-    save_path = os.path.join(save_path, save_name + '_final'.pth)
+    save_path = os.path.join(save_folder, 'checkpoints')
+    save_path = os.path.join(save_path, save_name + '_final.pth')
     torch.save(model.state_dict(), save_path)
 
     return model

@@ -24,3 +24,4 @@ logs:
   vis_freq: 
   project_name: 'whale_and_dolphin'
   task_name: 'vgg16_faiss_clusters_100'
+  

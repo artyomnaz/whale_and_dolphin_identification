@@ -20,7 +20,7 @@ import yaml
 
 if __name__ == "__main__":
 
-    with open("config.yaml", "r") as yml_file:
+    with open("options/config.yaml", "r") as yml_file:
         opt = yaml.safe_load(yml_file)
 
     device = torch.device('cuda:0')

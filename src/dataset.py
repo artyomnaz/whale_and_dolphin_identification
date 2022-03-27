@@ -81,10 +81,10 @@ def get_train_transform():
     Returns:
         _type_: torchvision.transforms
     """
-    transform = transforms.Compose([transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                                         std=[0.229, 0.224, 0.225]),
-                                    transforms.RandomHorizontalFlip(),
-                                    transforms.ToTensor()])
+    transform = transforms.Compose([transforms.RandomHorizontalFlip(),
+                                    transforms.ToTensor(),
+                                    transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                                         std=[0.229, 0.224, 0.225])])
     return transform
 
 
@@ -94,7 +94,7 @@ def get_test_transform():
     Returns:
         _type_: torchvision.transforms
     """
-    transform = transforms.Compose([transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                                         std=[0.229, 0.224, 0.225]),
-                                    transforms.ToTensor()])
+    transform = transforms.Compose([transforms.ToTensor(),
+                                    transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                                         std=[0.229, 0.224, 0.225])])
     return transform

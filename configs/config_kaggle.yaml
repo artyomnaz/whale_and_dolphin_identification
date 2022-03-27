@@ -1,0 +1,28 @@
+train_df_path: '../../input/modified-train-whale-and-dolphin-dataset/lite_train.csv'
+train_dataset_path: '../../input/modified-train-whale-and-dolphin-dataset/lite_train_resized/lite_train_resized'
+test_df_path: '../../input/happy-whale-and-dolphin/sample_submission.csv'
+test_dataset_path: '../../input/happy-whale-and-dolphin/test_images'
+save_folder: 'results/vgg16_faiss_clusters_50_lite_dataset_ext_aug_gem'
+happy_model_weights: ''
+train_embeddings_path: ''
+test_embeddings_path: ''
+train_labels_path: ''
+
+training:
+  lr: 1e-4
+  adam_weight_decay: 1e-6
+  n_epochs: 1
+  batch_size: 3
+  num_workers: 2
+  random_seed: 42
+  image_size: 128
+  embedding_size: 128
+  threshold_distance: 5
+  faiss_clusters: 50
+  balance_amount: 2
+
+logs:
+  use_clearml: True
+  vis_freq: 50
+  project_name: 'whale_and_dolphin'
+  task_name: 'vgg16_faiss_clusters_50_lite_dataset_ext_aug_gem'

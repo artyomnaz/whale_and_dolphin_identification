@@ -81,9 +81,9 @@ if __name__ == "__main__":
     train_df = train_dataset.df.copy()
 
     test_dataset = WhaleAndDolphinDataset(dataset_path=opt.test_dataset_path, df_path=opt.test_df_path,
-                                          image_size=128, transform=get_test_transform(), is_train=False)
+                                          image_size=128, transform=get_test_transform(), is_train=False, balanced=False)
     test_dataloader = DataLoader(
-        test_dataset, batch_size=opt.batch_size, drop_last=True, num_workers=opt.num_workers)
+        test_dataset, batch_size=opt.batch_size, num_workers=opt.num_workers)
     test_df = test_dataset.df.copy()
 
     # define model, optimizer, criterion

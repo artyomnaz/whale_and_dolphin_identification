@@ -21,7 +21,6 @@ training:
 
 logs:
   use_clearml: True
-  vis_freq: 
+  vis_freq: 50
   project_name: 'whale_and_dolphin'
   task_name: 'vgg16_faiss_clusters_100'
-  

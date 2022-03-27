@@ -62,7 +62,7 @@ class WhaleAndDolphinDataset(nn.Module):
 
         # apply transformations
         if self.transform is not None:
-            image = self.transform(image)
+            image = self.transform(image=image)
 
         # to tensor
         if image.shape[2] != self.image_size:

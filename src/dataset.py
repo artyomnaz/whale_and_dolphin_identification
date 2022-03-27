@@ -125,7 +125,7 @@ def get_train_transform():
         _type_: torchvision.transforms
     """
     transform = A.Compose([
-        A.HorizontalFlip(),
+        A.HorizontalFlip(p=0.5),
         A.ShiftScaleRotate(shift_limit=0.1, 
                            scale_limit=0.15, 
                            rotate_limit=60, 

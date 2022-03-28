@@ -128,4 +128,4 @@ if __name__ == "__main__":
 
     test_df['predictions'] = answers
     test_df.to_csv(os.path.join(opt['save_folder'],
-                   opt['task_name'] + '.csv'), index=False)
+                   opt['logs']['task_name'] + '.csv'), index=False)

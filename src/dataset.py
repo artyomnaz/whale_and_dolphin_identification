@@ -1,13 +1,13 @@
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
-import numpy as np
 import os
+
+import albumentations as A
+import numpy as np
 import pandas as pd
 import torch.nn as nn
-import torchvision.transforms as transforms
+from albumentations.pytorch import ToTensorV2
 from tqdm import tqdm
 
-from util import pad_and_resize_image
+from src.util import pad_and_resize_image
 
 
 class WhaleAndDolphinDataset(nn.Module):
@@ -72,7 +72,7 @@ class WhaleAndDolphinDataset(nn.Module):
                     counts[individual_key] += new_rows_amount
 
             self.df = self.df.append(
-                [self.df.iloc[new_rows]], ignore_index=True)
+                [self.df.iloc[new_rows]], ignore_index=True).reset_index()
 
     def __len__(self):
         """Dataset length
@@ -127,8 +127,8 @@ def get_train_transform():
     transform = A.Compose([
         A.HorizontalFlip(p=0.5),
         A.ShiftScaleRotate(shift_limit=0.1,
-                           scale_limit=0.15,
-                           rotate_limit=60,
+                           scale_limit=0,
+                           rotate_limit=10,
                            p=0.5),
         A.HueSaturationValue(
             hue_shift_limit=0.2,
@@ -158,8 +158,8 @@ def get_test_transform():
         _type_: torchvision.transforms
     """
 
-    transform = A.Compose([A.Normalize(mean=[0.485, 0.456, 0.406], 
-                                       std=[0.229, 0.224, 0.225], 
+    transform = A.Compose([A.Normalize(mean=[0.485, 0.456, 0.406],
+                                       std=[0.229, 0.224, 0.225],
                                        max_pixel_value=255.0, p=1.0),
                            ToTensorV2()], p=1.)
     return transform

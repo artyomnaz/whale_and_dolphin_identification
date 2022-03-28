@@ -7,7 +7,7 @@ import torch.nn as nn
 from albumentations.pytorch import ToTensorV2
 from tqdm import tqdm
 
-from src.util import pad_and_resize_image
+from util import pad_and_resize_image
 
 
 class WhaleAndDolphinDataset(nn.Module):

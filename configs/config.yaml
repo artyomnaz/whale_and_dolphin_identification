@@ -20,6 +20,7 @@ training:
   threshold_distance: 5
   faiss_clusters: 50
   balance_amount: 2
+  model_name: 'vgg16'
 
 logs:
   use_clearml: True

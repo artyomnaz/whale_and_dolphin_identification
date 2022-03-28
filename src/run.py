@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     # define model, optimizer, criterion
     happy_model = HappyWhaleModel(
-        numClasses=15587, noNeurons=250, embeddingSize=opt['training']['embedding_size']).to(device)
+        numClasses=15587, noNeurons=250, embeddingSize=opt['training']['embedding_size'], model_name=opt['training']['model_name']).to(device)
 
     # ------------------------------------------CLEARML
     if opt['logs']['use_clearml']:

@@ -14,14 +14,14 @@ class GeM(nn.Module):
 
     def forward(self, x):
         return self.gem(x, p=self.p, eps=self.eps)
-        
+
     def gem(self, x, p=3, eps=1e-6):
         return F.avg_pool2d(x.clamp(min=eps).pow(p), (x.size(-2), x.size(-1))).pow(1./p)
-        
+
     def __repr__(self):
         return self.__class__.__name__ + \
-                '(' + 'p=' + '{:.4f}'.format(self.p.data.tolist()[0]) + \
-                ', ' + 'eps=' + str(self.eps) + ')'
+            '(' + 'p=' + '{:.4f}'.format(self.p.data.tolist()[0]) + \
+            ', ' + 'eps=' + str(self.eps) + ')'
 
 
 class ArcMarginProduct(nn.Module):
@@ -104,6 +104,13 @@ class HappyModelBackbone(nn.Module):
             self.pretrained_model = models.vgg16(pretrained=True)
             self.pretrained_model = torch.nn.Sequential(
                 *(list(self.pretrained_model.children())[:-2] + [nn.AdaptiveAvgPool2d(1)]))
+            self.backbone_features = 512
+        elif model_name == 'resnet18':
+            self.pooling = GeM()
+            self.pretrained_model = models.resnet18(pretrained=True)
+            self.pretrained_model = torch.nn.Sequential(
+                *(list(self.pretrained_model.children())[:-2] + [nn.AdaptiveAvgPool2d(1)]))
+            self.backbone_features = 512
 
     def forward(self, x):
         """Forward function
@@ -121,17 +128,19 @@ class HappyWhaleModel(nn.Module):
     """ The main Happy Whale Model
     """
 
-    def __init__(self, numClasses, noNeurons, embeddingSize):
+    def __init__(self, numClasses, noNeurons, embeddingSize, model_name='vgg16'):
         """initialization
 
         Args:
             numClasses (int): classes amount
             noNeurons (int): hidden neurons amount
             embeddingSize (int): output embedding size
+            model_name (str): backbone model name
         """
         super(HappyWhaleModel, self).__init__()
-        self.backbone = HappyModelBackbone()
-        backbone_features = 512
+        self.model_name = model_name
+        self.backbone = HappyModelBackbone(self.model_name)
+        backbone_features = self.backbone.backbone_features
 
         self.embedding = nn.Sequential(nn.Linear(backbone_features, noNeurons),
                                        nn.BatchNorm1d(noNeurons),

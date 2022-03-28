@@ -64,6 +64,7 @@ if __name__ == "__main__":
         # add generator configurations to clearml
         cfg_str = str(happy_model) + str('\n')
         Task.current_task().set_model_config(cfg_str)
+        Task.current_task().connect(opt)
     # ------------------------------------------CLEARML
 
     optimizer = Adam(happy_model.parameters(), lr=float(opt['training']['lr']),

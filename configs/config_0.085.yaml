@@ -1,0 +1,28 @@
+train_df_path: 'dataset/lite_train.csv'
+train_dataset_path: 'dataset/lite_train_resized'
+test_df_path: 'dataset/sample_submission.csv'
+test_dataset_path: 'dataset/test_images'
+save_folder: 'results/vgg16_faiss_clusters_50_lite_dataset_balanced'
+happy_model_weights: 'results\vgg16_faiss_clusters_50_lite_dataset_balanced\checkpoints\vgg16_faiss_clusters_50_lite_dataset_balanced_final.pth'
+train_embeddings_path: 'results\vgg16_faiss_clusters_50_lite_dataset_balanced\train_happy_model_embeddings.npy'
+test_embeddings_path: 'results\vgg16_faiss_clusters_50_lite_dataset_balanced\test_happy_model_embeddings.npy'
+train_labels_path: 'results\vgg16_faiss_clusters_50_lite_dataset_balanced\train_happy_model_labels.npy'
+
+training:
+  lr: 1e-4
+  adam_weight_decay: 1e-6
+  n_epochs: 1
+  batch_size: 3
+  num_workers: 4
+  random_seed: 42
+  image_size: 128
+  embedding_size: 128
+  threshold_distance: 5
+  faiss_clusters: 50
+  balance_amount: 2
+
+logs:
+  use_clearml: True
+  vis_freq: 50
+  project_name: 'whale_and_dolphin'
+  task_name: 'vgg16_faiss_clusters_50_lite_dataset_balanced'

@@ -1,0 +1,1 @@
+python src/run.py --config_path configs/config_Max_0_111.yaml

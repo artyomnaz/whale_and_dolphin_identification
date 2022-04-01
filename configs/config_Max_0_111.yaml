@@ -1,0 +1,29 @@
+train_df_path: 'D:\kaggle\whale_and_dolphin_identification\whale_and_dolphin_identification\dataset\lite_train.csv'
+train_dataset_path: 'D:\kaggle\whale_and_dolphin_identification\whale_and_dolphin_identification\dataset\lite_train_resized'
+test_df_path: 'D:\kaggle\whale_and_dolphin_identification\whale_and_dolphin_identification\dataset\sample_submission.csv'
+test_dataset_path: 'D:\kaggle\whale_and_dolphin_identification\whale_and_dolphin_identification\dataset\test_images'
+save_folder: 'D:\kaggle\whale_and_dolphin_identification\whale_and_dolphin_identification\results\Max_0_111'
+happy_model_weights: 'D:\kaggle\whale_and_dolphin_identification\whale_and_dolphin_identification\results\Max_0_111\checkpoints\resnet18_faiss_clusters_50_lite_dataset_balanced_5_final.pth'
+train_embeddings_path: 'D:\kaggle\whale_and_dolphin_identification\whale_and_dolphin_identification\results\Max_0_111\train_happy_model_embeddings.npy'
+test_embeddings_path: 'D:\kaggle\whale_and_dolphin_identification\whale_and_dolphin_identification\results\Max_0_111\test_happy_model_embeddings.npy'
+train_labels_path: 'D:\kaggle\whale_and_dolphin_identification\whale_and_dolphin_identification\results\Max_0_111\train_happy_model_labels.npy'
+
+training:
+  lr: 1e-4
+  adam_weight_decay: 1e-6
+  n_epochs: 5
+  batch_size: 2
+  num_workers: 0
+  random_seed: 42
+  image_size: 128
+  embedding_size: 128
+  threshold_distance: 0.5
+  faiss_clusters: 50
+  balance_amount: 5
+  model_name: 'resnet18'
+
+logs:
+  use_clearml: False
+  vis_freq: 50
+  project_name: 'whale_and_dolphin'
+  task_name: 'resnet18_kfold_100'

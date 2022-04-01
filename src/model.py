@@ -121,7 +121,8 @@ class HappyModelBackbone(nn.Module):
         Returns:
             _type_: torch.tensor
         """
-        return self.pooling(self.pretrained_model(x))
+        # return self.pooling(self.pretrained_model(x))
+        return self.pretrained_model(x)
 
 
 class HappyWhaleModel(nn.Module):
@@ -140,9 +141,9 @@ class HappyWhaleModel(nn.Module):
         super(HappyWhaleModel, self).__init__()
         self.model_name = model_name
         self.backbone = HappyModelBackbone(self.model_name)
-        backbone_features = self.backbone.backbone_features
+        self.backbone_features = self.backbone.backbone_features
 
-        self.embedding = nn.Sequential(nn.Linear(backbone_features, noNeurons),
+        self.embedding = nn.Sequential(nn.Linear(self.backbone_features, noNeurons),
                                        nn.BatchNorm1d(noNeurons),
                                        nn.ReLU(),
                                        nn.Dropout(p=0.2),
@@ -168,7 +169,7 @@ class HappyWhaleModel(nn.Module):
         """
         # embeddings retrieving
         features = self.backbone(image)
-        features = features.view(-1, 512)
+        features = features.view(-1, self.backbone_features)
         embedding = self.embedding(features)
 
         if target != None:

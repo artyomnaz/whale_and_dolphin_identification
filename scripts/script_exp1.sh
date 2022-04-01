@@ -1,0 +1,1 @@
+python src/run.py --config_path configs/config_exp1.yaml

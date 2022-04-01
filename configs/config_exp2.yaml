@@ -1,0 +1,29 @@
+train_df_path: 'dataset/lite_train.csv'
+train_dataset_path: 'dataset/lite_train_resized'
+test_df_path: 'dataset/sample_submission.csv'
+test_dataset_path: 'dataset/test_images'
+save_folder: 'results/exp2_resnet18_correct_augs_faiss_clusters_50_th_distance_1_lite_dataset_balanced'
+happy_model_weights: 'results\exp2_resnet18_correct_augs_faiss_clusters_50_th_distance_1_lite_dataset_balanced\checkpoints\exp2_resnet18_correct_augs_faiss_clusters_50_th_distance_1_lite_dataset_balanced_17.034.pth'
+train_embeddings_path: 'results\exp2_resnet18_correct_augs_faiss_clusters_50_th_distance_1_lite_dataset_balanced\train_happy_model_embeddings.npy'
+test_embeddings_path: 'results\exp2_resnet18_correct_augs_faiss_clusters_50_th_distance_1_lite_dataset_balanced\test_happy_model_embeddings.npy'
+train_labels_path: 'results\exp2_resnet18_correct_augs_faiss_clusters_50_th_distance_1_lite_dataset_balanced\train_happy_model_labels.npy'
+
+training:
+  lr: 1e-4
+  adam_weight_decay: 1e-6
+  n_epochs: 10
+  batch_size: 8
+  num_workers: 4
+  random_seed: 42
+  image_size: 128
+  embedding_size: 128
+  threshold_distance: 10
+  faiss_clusters: 10
+  balance_amount: 2
+  model_name: 'resnet18'
+
+logs:
+  use_clearml: True
+  vis_freq: 50
+  project_name: 'whale_and_dolphin'
+  task_name: 'exp2_resnet18_correct_augs_faiss_clusters_50_th_distance_1_lite_dataset_balanced'

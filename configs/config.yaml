@@ -1,0 +1,39 @@
+paths:
+  INPUT_DIR: "input"
+  OUTPUT_DIR: "kaggle/working"
+
+  DATA_ROOT_DIR: "input/convert-backfintfrecords/happy-whale-and-dolphin-backfin"
+  TRAIN_DIR: "input/convert-backfintfrecords/happy-whale-and-dolphin-backfin/train_images"
+  TEST_DIR: "input/convert-backfintfrecords/happy-whale-and-dolphin-backfin/test_images"
+  TRAIN_CSV_PATH: "input/convert-backfintfrecords/happy-whale-and-dolphin-backfin/train.csv"
+  SAMPLE_SUBMISSION_CSV_PATH: "input/convert-backfintfrecords/happy-whale-and-dolphin-backfin/sample_submission.csv"
+  PUBLIC_SUBMISSION_CSV_PATH: "input/0-720-eff-b5-640-rotate/submission.csv"
+  IDS_WITHOUT_BACKFIN_PATH: "input/ids-without-backfin/ids_without_backfin.npy"
+  ENCODER_CLASSES_PATH: "kaggle/working/encoder_classes.npy"
+  TEST_CSV_PATH: "kaggle/working/test.csv"
+  TRAIN_CSV_ENCODED_FOLDED_PATH: "kaggle/working/train_encoded_folded.csv"
+  CHECKPOINTS_DIR: "kaggle/working/checkpoints"
+  SUBMISSION_CSV_PATH: "kaggle/working/submission.csv"
+
+params:
+  val_fold: 0.0,
+  image_size: 475,
+  batch_size: 32,
+  num_workers: 2,
+  model_name: "tf_efficientnet_l2_ns_475",
+  pretrained: True,
+  drop_rate: 0.0,
+  embedding_size: 512,
+  num_classes: 15587,
+  optimizer: "adam",
+  learning_rate: 3e-4,
+  weight_decay: 1e-6,
+  accumulate_grad_batches: 1,
+  auto_lr_find: False,
+  auto_scale_batch_size: False,
+  fast_dev_run: False,
+  gpus: 1,
+  max_epochs: 10,
+  precision: 16,
+  stochastic_weight_avg: True,
+  n_splits: 5

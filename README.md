@@ -1,6 +1,6 @@
 # Whale and dolphin identification
 
-![banner](/sup_mat/banner.png)
+![banner](sup_mat/banner.png)
 
 This repo created for the Kaggle competition "Happywhale - Whale and Dolphin Identification" by artyomnaz, max_vasyuk
 

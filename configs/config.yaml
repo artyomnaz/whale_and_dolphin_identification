@@ -15,7 +15,7 @@ paths:
   CHECKPOINTS_DIR: "kaggle/working/checkpoints"
   SUBMISSION_CSV_PATH: "kaggle/working/submission.csv"
 
-params:
+train_params:
   val_fold: 0.0,
   image_size: 475,
   batch_size: 32,
@@ -35,5 +35,7 @@ params:
   gpus: 1,
   max_epochs: 10,
   precision: 16,
-  stochastic_weight_avg: True,
+  stochastic_weight_avg: True
+
+inference_params:
   n_splits: 5

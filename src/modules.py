@@ -30,23 +30,28 @@ class LitDataModule(pl.LightningDataModule):
 
         self.train_df = pd.read_csv(train_csv_encoded_folded)
         self.test_df = pd.read_csv(test_csv)
-        
+
         self.transform = create_transform(
             input_size=(self.hparams.image_size, self.hparams.image_size),
             crop_pct=1.0,
         )
-        
+
     def setup(self, stage: Optional[str] = None):
         if stage == "fit" or stage is None:
             # Split train df using fold
-            train_df = self.train_df[self.train_df.kfold != self.hparams.val_fold].reset_index(drop=True)
-            val_df = self.train_df[self.train_df.kfold == self.hparams.val_fold].reset_index(drop=True)
+            train_df = self.train_df[self.train_df.kfold !=
+                                     self.hparams.val_fold].reset_index(drop=True)
+            val_df = self.train_df[self.train_df.kfold ==
+                                   self.hparams.val_fold].reset_index(drop=True)
 
-            self.train_dataset = HappyWhaleDataset(train_df, transform=self.transform)
-            self.val_dataset = HappyWhaleDataset(val_df, transform=self.transform)
+            self.train_dataset = HappyWhaleDataset(
+                train_df, transform=self.transform)
+            self.val_dataset = HappyWhaleDataset(
+                val_df, transform=self.transform)
 
         if stage == "test" or stage is None:
-            self.test_dataset = HappyWhaleDataset(self.test_df, transform=self.transform)
+            self.test_dataset = HappyWhaleDataset(
+                self.test_df, transform=self.transform)
 
     def train_dataloader(self) -> DataLoader:
         return self._dataloader(self.train_dataset, train=True)
@@ -84,14 +89,16 @@ class LitModule(pl.LightningModule):
         learning_rate: float,
         weight_decay: float,
         len_train_dl: int,
-        epochs:int
+        epochs: int
     ):
         super().__init__()
 
         self.save_hyperparameters()
 
-        self.model = timm.create_model(model_name, pretrained=pretrained, drop_rate=drop_rate)
-        self.embedding = nn.Linear(self.model.get_classifier().in_features, embedding_size)
+        self.model = timm.create_model(
+            model_name, pretrained=pretrained, drop_rate=drop_rate)
+        self.embedding = nn.Linear(
+            self.model.get_classifier().in_features, embedding_size)
         self.model.reset_classifier(num_classes=0, global_pool="avg")
 
         self.arc = ArcMarginProduct(
@@ -118,7 +125,7 @@ class LitModule(pl.LightningModule):
             lr=self.hparams.learning_rate,
             weight_decay=self.hparams.weight_decay,
         )
-        
+
         scheduler = torch.optim.lr_scheduler.OneCycleLR(
             optimizer,
             self.hparams.learning_rate,
@@ -142,7 +149,7 @@ class LitModule(pl.LightningModule):
         outputs = self.arc(embeddings, targets, self.device)
 
         loss = self.loss_fn(outputs, targets)
-        
+
         self.log(f"{step}_loss", loss)
 
         return loss

@@ -1,1 +1,0 @@
-python src/run.py --config_path configs/config.yaml

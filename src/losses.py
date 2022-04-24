@@ -32,7 +32,8 @@ class ArcMarginProduct(nn.Module):
         self.s = s
         self.m = m
         self.ls_eps = ls_eps  # label smoothing
-        self.weight = nn.Parameter(torch.FloatTensor(out_features, in_features))
+        self.weight = nn.Parameter(
+            torch.FloatTensor(out_features, in_features))
         nn.init.xavier_uniform_(self.weight)
 
         self.easy_margin = easy_margin
@@ -58,7 +59,8 @@ class ArcMarginProduct(nn.Module):
         one_hot = torch.zeros(cosine.size(), device=device)
         one_hot.scatter_(1, label.view(-1, 1).long(), 1)
         if self.ls_eps > 0:
-            one_hot = (1 - self.ls_eps) * one_hot + self.ls_eps / self.out_features
+            one_hot = (1 - self.ls_eps) * one_hot + \
+                self.ls_eps / self.out_features
         # -------------torch.where(out_i = {x_i if condition_i else y_i) ------------
         output = (one_hot * phi) + ((1.0 - one_hot) * cosine)
         output *= self.s

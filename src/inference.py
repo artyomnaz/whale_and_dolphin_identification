@@ -53,8 +53,10 @@ def create_val_targets_df(
 ) -> pd.DataFrame:
 
     allowed_targets = np.unique(train_targets)
-    val_targets_df = pd.DataFrame(np.stack([val_image_names, val_targets], axis=1), columns=["image", "target"])
-    val_targets_df.loc[~val_targets_df.target.isin(allowed_targets), "target"] = "new_individual"
+    val_targets_df = pd.DataFrame(
+        np.stack([val_image_names, val_targets], axis=1), columns=["image", "target"])
+    val_targets_df.loc[~val_targets_df.target.isin(
+        allowed_targets), "target"] = "new_individual"
 
     return val_targets_df
 
@@ -67,13 +69,16 @@ def create_distances_df(
     for i, image_name in tqdm(enumerate(image_names), desc=f"Creating {stage}_df"):
         target = targets[I[i]]
         distances = D[i]
-        subset_preds = pd.DataFrame(np.stack([target, distances], axis=1), columns=["target", "distances"])
+        subset_preds = pd.DataFrame(np.stack([target, distances], axis=1), columns=[
+                                    "target", "distances"])
         subset_preds["image"] = image_name
         distances_df.append(subset_preds)
 
     distances_df = pd.concat(distances_df).reset_index(drop=True)
-    distances_df = distances_df.groupby(["image", "target"]).distances.max().reset_index()
-    distances_df = distances_df.sort_values("distances", ascending=False).reset_index(drop=True)
+    distances_df = distances_df.groupby(
+        ["image", "target"]).distances.max().reset_index()
+    distances_df = distances_df.sort_values(
+        "distances", ascending=False).reset_index(drop=True)
 
     return distances_df
 
@@ -104,7 +109,8 @@ def get_best_threshold(val_targets_df: pd.DataFrame, valid_df: pd.DataFrame) -> 
     # Adjustment: Since Public lb has nearly 10% 'new_individual' (Be Careful for private LB)
     val_targets_df["is_new_individual"] = val_targets_df.target == "new_individual"
     val_scores = val_targets_df.groupby("is_new_individual").mean().T
-    val_scores["adjusted_cv"] = val_scores[True] * 0.1 + val_scores[False] * 0.9
+    val_scores["adjusted_cv"] = val_scores[True] * \
+        0.1 + val_scores[False] * 0.9
     best_th = val_scores["adjusted_cv"].idxmax()
     print(f"best_th_adjusted={best_th}")
 
@@ -112,7 +118,8 @@ def get_best_threshold(val_targets_df: pd.DataFrame, valid_df: pd.DataFrame) -> 
 
 
 def get_predictions(df: pd.DataFrame, threshold: float = 0.2):
-    sample_list = ["938b7e931166", "5bf17305f073", "7593d2aee842", "7362d7a01d00", "956562ff2888"]
+    sample_list = ["938b7e931166", "5bf17305f073",
+                   "7593d2aee842", "7362d7a01d00", "956562ff2888"]
 
     predictions = {}
     for i, row in tqdm(df.iterrows(), total=len(df), desc=f"Creating predictions for threshold={threshold}"):
@@ -160,6 +167,7 @@ def create_predictions_df(test_df: pd.DataFrame, best_th: float) -> pd.DataFrame
 
     predictions = pd.Series(predictions).reset_index()
     predictions.columns = ["image", "predictions"]
-    predictions["predictions"] = predictions["predictions"].apply(lambda x: " ".join(x))
+    predictions["predictions"] = predictions["predictions"].apply(
+        lambda x: " ".join(x))
 
     return predictions

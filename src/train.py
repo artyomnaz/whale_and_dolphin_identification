@@ -44,7 +44,7 @@ def train(
         batch_size=batch_size,
         num_workers=num_workers,
     )
-    
+
     datamodule.setup()
     len_train_dl = len(datamodule.train_dataloader())
 
@@ -64,14 +64,13 @@ def train(
         len_train_dl=len_train_dl,
         epochs=max_epochs
     )
-        
+
     model_checkpoint = ModelCheckpoint(
         checkpoints_dir,
         filename=f"{model_name}_{image_size}",
         monitor="val_loss",
     )
-    
-    
+
     trainer = pl.Trainer(
         accumulate_grad_batches=accumulate_grad_batches,
         auto_lr_find=auto_lr_find,

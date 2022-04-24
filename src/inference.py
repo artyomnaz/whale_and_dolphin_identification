@@ -1,4 +1,5 @@
 from typing import Tuple
+import yaml
 
 import faiss
 import numpy as np
@@ -8,6 +9,13 @@ import torch
 from sklearn.preprocessing import LabelEncoder, normalize
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+
+from src.dataset import load_dataloaders, load_eval_module
+from src.utils import load_encoder
+
+
+with open('configs/config.yaml', "r") as yml_file:
+    opt = yaml.safe_load(yml_file)
 
 
 @torch.inference_mode()
@@ -163,3 +171,74 @@ def create_predictions_df(test_df: pd.DataFrame, best_th: float) -> pd.DataFrame
     predictions["predictions"] = predictions["predictions"].apply(lambda x: " ".join(x))
 
     return predictions
+
+
+def infer(
+    checkpoint_path: str,
+    train_csv_encoded_folded: str = str(opt['paths']['TRAIN_CSV_ENCODED_FOLDED_PATH']),
+    test_csv: str = str(opt['paths']['TEST_CSV_PATH']),
+    val_fold: float = 0.0,
+    image_size: int = 256,
+    batch_size: int = 64,
+    num_workers: int = 2,
+    k: int = 64, 
+):
+    module = load_eval_module(checkpoint_path, torch.device("cuda"))
+
+    train_dl, val_dl, test_dl = load_dataloaders(
+        train_csv_encoded_folded=train_csv_encoded_folded,
+        test_csv=test_csv,
+        val_fold=val_fold,
+        image_size=image_size,
+        batch_size=batch_size,
+        num_workers=num_workers,
+    )
+
+    encoder = load_encoder()
+
+    train_image_names, train_embeddings, train_targets = get_embeddings(module, train_dl, encoder, stage="train")
+    val_image_names, val_embeddings, val_targets = get_embeddings(module, val_dl, encoder, stage="val")
+    test_image_names, test_embeddings, test_targets = get_embeddings(module, test_dl, encoder, stage="test")
+
+    D, I = create_and_search_index(module.hparams.embedding_size, train_embeddings, val_embeddings, k)  # noqa: E741
+    print("Created index with train_embeddings")
+
+    val_targets_df = create_val_targets_df(train_targets, val_image_names, val_targets)
+    print(f"val_targets_df=\n{val_targets_df.head()}")
+
+    val_df = create_distances_df(val_image_names, train_targets, D, I, "val")
+    print(f"val_df=\n{val_df.head()}")
+
+    best_th, best_cv = get_best_threshold(val_targets_df, val_df)
+    print(f"val_targets_df=\n{val_targets_df.describe()}")
+
+    train_embeddings = np.concatenate([train_embeddings, val_embeddings])
+    train_targets = np.concatenate([train_targets, val_targets])
+    print("Updated train_embeddings and train_targets with val data")
+
+    D, I = create_and_search_index(module.hparams.embedding_size, train_embeddings, test_embeddings, k)  # noqa: E741
+    print("Created index with train_embeddings")
+
+    test_df = create_distances_df(test_image_names, train_targets, D, I, "test")
+    print(f"test_df=\n{test_df.head()}")
+
+    predictions = create_predictions_df(test_df, best_th)
+    print(f"predictions.head()={predictions.head()}")
+    
+    # Fix missing predictions
+    # From https://www.kaggle.com/code/jpbremer/backfins-arcface-tpu-effnet/notebook
+    public_predictions = pd.read_csv(opt['paths']['PUBLIC_SUBMISSION_CSV_PATH'])
+    ids_without_backfin = np.load(opt['paths']['IDS_WITHOUT_BACKFIN_PATH'], allow_pickle=True)
+
+    ids2 = public_predictions["image"][~public_predictions["image"].isin(predictions["image"])]
+
+    predictions = pd.concat(
+        [
+            predictions[~(predictions["image"].isin(ids_without_backfin))],
+            public_predictions[public_predictions["image"].isin(ids_without_backfin)],
+            public_predictions[public_predictions["image"].isin(ids2)],
+        ]
+    )
+    predictions = predictions.drop_duplicates()
+
+    predictions.to_csv(opt['paths']['SUBMISSION_CSV_PATH'], index=False)
